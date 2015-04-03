@@ -43,7 +43,6 @@ def mouseclick(posx,posy):
 #mouseEvent(kCGEventMouseMoved, posx,posy);
   mouseEvent(kCGEventLeftMouseDown, posx,posy);
   mouseEvent(kCGEventLeftMouseUp, posx,posy);
-  #time.sleep(0.5)
 
 def keypress(keycode):
   theEvent = CGEventCreateKeyboardEvent(None, keycode, True)
@@ -70,8 +69,6 @@ def cmdA():
   #CFRelease(theEvent)
 
 activate_qlab = """ osascript -e 'tell application "Qlab" to activate' """
-
-cmd = """ osascript -e 'tell application "System Events" to keystroke "m" using {command down}' """
 
 resize_qlab = """ osascript -e 'set bounds of window 1 of application "Qlab" to {0,0,1200, 1000}' """
 
@@ -109,34 +106,56 @@ def quartzType(string):
 
 def overwriteType(string):
   cmdA()
-  time.sleep(0.1)
   quartzType(string)
 
-# minimize active window
-os.system(activate_qlab)
-os.system(resize_qlab)
+# Generate list of cues to populate qlab
+def genCueList(cue_list_num, cue_start, cue_end, increment):
+  cue_list = []
+  
+  for i in xrange(cue_start, cue_end + increment, increment):
+    name = "{0}.{1}".format(cue_list_num, i)
+    qnumber = str(i)
+    qlist = str(cue_list_num)
 
+    cue_list.append({'name': name, 'qnumber': qnumber, 'qlist': qlist})
 
-#res = toKeyCodeArr('123')
-#quartzType(res)
+  return cue_list
 
-mouseclick(*targets['qlist'])
+def populateQlab(cue_list):
+  for cue in cue_list:
+    cmdC()
+    cmdV()
 
-#sys.exit()
+    mouseclick(*targets['basic'])
+    mouseclick(*targets['name'])
+    overwriteType(cue['name'])
 
-for i in xrange(4):
-  time.sleep(0.1)
-  cmdC()
-  cmdV()
+    mouseclick(*targets['settings'])
+    mouseclick(*targets['qnumber'])
+    overwriteType(cue['qnumber'])
+    mouseclick(*targets['qlist'])
+    overwriteType(cue['qlist'])
+    keypress(control_codes['return'])
 
-  mouseclick(*targets['basic'])
-  mouseclick(*targets['name'])
-  overwriteType('1.2')
+if __name__ == "__main__":
+# Resize qlab window to expected dimensions
+  os.system(activate_qlab)
+  os.system(resize_qlab)
 
-  mouseclick(*targets['settings'])
-  mouseclick(*targets['qnumber'])
-  overwriteType('2')
-  mouseclick(*targets['qlist'])
-  overwriteType('2')
-  keypress(control_codes['return'])
-
+  populateQlab(genCueList(1, 2, 6, 2))
+  populateQlab(genCueList(2, 0, 142, 2))
+  populateQlab(genCueList(3, 0, 32, 2))
+  populateQlab(genCueList(4, 0, 2, 2))
+  populateQlab(genCueList(5, 0, 58, 2))
+  populateQlab(genCueList(6, 0, 32, 2))
+  populateQlab(genCueList(7, 0, 50, 2))
+  populateQlab(genCueList(8, 0, 2, 2))
+  populateQlab(genCueList(9, 0, 46, 2))
+  populateQlab(genCueList(10, 0, 70, 2))
+  populateQlab(genCueList(11, 0, 66, 2))
+  populateQlab(genCueList(12, 0, 6, 2))
+  populateQlab(genCueList(13, 0, 60, 2))
+  populateQlab(genCueList(14, 0, 26, 2))
+  populateQlab(genCueList(15, 0, 26, 2))
+  populateQlab(genCueList(16, 0, 2, 2))
+  populateQlab(genCueList(17, 0, 16, 2))
