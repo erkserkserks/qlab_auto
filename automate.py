@@ -43,7 +43,7 @@ def mouseclick(posx,posy):
 #mouseEvent(kCGEventMouseMoved, posx,posy);
   mouseEvent(kCGEventLeftMouseDown, posx,posy);
   mouseEvent(kCGEventLeftMouseUp, posx,posy);
-  time.sleep(0.5)
+  #time.sleep(0.5)
 
 def keypress(keycode):
   theEvent = CGEventCreateKeyboardEvent(None, keycode, True)
