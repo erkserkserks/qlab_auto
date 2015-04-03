@@ -38,14 +38,16 @@ def mousemove(posx,posy):
         mouseEvent(kCGEventMouseMoved, posx,posy);
 
 def mouseclick(posx,posy):
-        # uncomment this line if you want to force the mouse 
-        # to MOVE to the click location first (I found it was not necessary).
-        #mouseEvent(kCGEventMouseMoved, posx,posy);
-        mouseEvent(kCGEventLeftMouseDown, posx,posy);
-        mouseEvent(kCGEventLeftMouseUp, posx,posy);
+# uncomment this line if you want to force the mouse 
+# to MOVE to the click location first (I found it was not necessary).
+#mouseEvent(kCGEventMouseMoved, posx,posy);
+  mouseEvent(kCGEventLeftMouseDown, posx,posy);
+  mouseEvent(kCGEventLeftMouseUp, posx,posy);
+  time.sleep(0.5)
 
 def keypress(keycode):
   theEvent = CGEventCreateKeyboardEvent(None, keycode, True)
+  CGEventSetFlags(theEvent, 0)
   CGEventPost(kCGHIDEventTap, theEvent)
 
 def cmdC():
@@ -60,7 +62,12 @@ def cmdV():
   CGEventPost(kCGHIDEventTap, theEvent)
   #CFRelease(theEvent)
 
-
+def cmdA():
+  theEvent = CGEventCreateKeyboardEvent(None, 0x00, True)
+  CGEventSetFlags(theEvent, kCGEventFlagMaskCommand)
+  CGEventPost(kCGHIDEventTap, theEvent)
+  CGEventSetFlags(theEvent, ~kCGEventFlagMaskCommand)
+  #CFRelease(theEvent)
 
 activate_qlab = """ osascript -e 'tell application "Qlab" to activate' """
 
@@ -89,28 +96,47 @@ control_codes = {
   'esc':      0x35
 }
 
-def toKeyCodeArr(string):
-  result = []
+
+def quartzType(string):
+  # Convert string to osx keycodes
+  keycodes = []
   for letter in string:
-    result.append(printable_codes[letter])
-  return result
+    keycodes.append(printable_codes[letter])
 
-
-def quartzType(keycodeArr):
-  for k in keycodeArr:
+  # Press keys
+  for k in keycodes:
     keypress(k)
+
+def overwriteType(string):
+  cmdA()
+  time.sleep(0.1)
+  quartzType(string)
 
 # minimize active window
 os.system(activate_qlab)
-#os.system(resize_qlab)
+os.system(resize_qlab)
 
 
 #res = toKeyCodeArr('123')
 #quartzType(res)
 
+mouseclick(*targets['qlist'])
 
-time.sleep(0.1)
-cmdC()
-cmdV()
-#mouseclick(*targets['settings'])
-#mouseclick(*targets['basic'])
+#sys.exit()
+
+for i in xrange(4):
+  time.sleep(0.1)
+  cmdC()
+  cmdV()
+
+  mouseclick(*targets['basic'])
+  mouseclick(*targets['name'])
+  overwriteType('1.2')
+
+  mouseclick(*targets['settings'])
+  mouseclick(*targets['qnumber'])
+  overwriteType('2')
+  mouseclick(*targets['qlist'])
+  overwriteType('2')
+  keypress(control_codes['return'])
+
